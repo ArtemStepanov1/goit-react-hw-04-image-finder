@@ -34,7 +34,7 @@ export class App extends Component {
         this.setState({ canShowMore: true })
       }
     })
-    .catch(this.onApiError);
+    .catch();
 
   }
 
