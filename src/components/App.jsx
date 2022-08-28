@@ -78,7 +78,10 @@ export class App extends Component {
   };
 
   handleFormSubmit = value => {
-    this.setState({ value })  
+    if(!this.state.showModal){
+    this.setState({ value })
+    }
+    return  
   }
 
   showMore = () => {
