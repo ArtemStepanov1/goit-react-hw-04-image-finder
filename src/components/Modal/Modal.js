@@ -32,13 +32,13 @@ export class Modal extends Component {
 
     render() {
 
-        const { largeImageURL, tags } = this.props;
+        const { largeImageURL } = this.props;
 
         return(createPortal(
 
             <ModalBackdrop onClick={this.handleBackdropClick}>
                 <ModalContent >
-                    <img src={largeImageURL} alt={tags} />
+                    <img src={largeImageURL} alt="" />
                 </ModalContent>
             </ModalBackdrop>,
         
@@ -50,5 +50,4 @@ export class Modal extends Component {
 Modal.propTypes = {
     onClose: PropTypes.func.isRequired,
     largeImageURL: PropTypes.string.isRequired,
-    tags: PropTypes.string.isRequired,
 };

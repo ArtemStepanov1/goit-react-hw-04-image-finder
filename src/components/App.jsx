@@ -16,7 +16,7 @@ const perPage = 12;
 export class App extends Component {
   state = {
     images: [],
-    image: {},
+    largeImageURL: '',
     loading: false,
     page: 1,
     value: '',
@@ -104,14 +104,15 @@ export class App extends Component {
     }))
   }
 
-  onImageClick = (e) => {
-    const image = this.state.images.find(i => i.id.toString() === e.target.id);
-    this.setState({ image });
+  onImageClick = (largeImageURL) => {
+    this.setState({ largeImageURL });
     this.toggleModal();
   };
 
+
+
   render() {
-    const { images, value, loading, canShowMore, showModal, image } = this.state;
+    const { images, value, loading, canShowMore, showModal, largeImageURL } = this.state;
 
     return(
       <>
@@ -129,8 +130,7 @@ export class App extends Component {
 
         {showModal && <Modal 
           onClose={this.toggleModal}
-          largeImageURL={image.largeImageURL}
-          tags={image.tags}
+          largeImageURL={largeImageURL}
         />}
 
         <GlobalStyle/>
