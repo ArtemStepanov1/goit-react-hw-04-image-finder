@@ -12,6 +12,8 @@ import Notiflix from 'notiflix';
 
 
 const perPage = 12;
+// const modalRoot = document.querySelector('#root');
+
 
 export class App extends Component {
   state = {
@@ -81,7 +83,6 @@ export class App extends Component {
     if(!this.state.showModal){
     this.setState({ value })
     }
-    return  
   }
 
   showMore = () => {
