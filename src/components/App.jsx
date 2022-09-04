@@ -37,6 +37,7 @@ export const App = () => {
         }
       })  
       .catch(onApiError);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[value, page]);
 
   const handleSubmit = value => {
