@@ -19,7 +19,6 @@ export const App = () => {
   const [isShowMore, setIsShowMore] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-
   useEffect(() => {     
       if (!value) return;
       setLoading(true);
