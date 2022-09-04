@@ -20,8 +20,11 @@ export const App = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {     
+
       if (!value) return;
+
       setLoading(true);
+
       FetchSearch(value, page)
       .then(data => {
         setImages(prev => [...prev, ...data.hits]);
@@ -34,7 +37,6 @@ export const App = () => {
         }
       })  
       .catch(onApiError);
-    
   },[value, page]);
 
   const handleSubmit = value => {
