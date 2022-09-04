@@ -1,141 +1,100 @@
-import { Component } from "react";
+import { useState, useEffect } from "react";
 import { GlobalStyle } from "./GlobalStyle";
 import { Searchbar } from "./Searchbar/Searchbar";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
 import { LoadMoreBtn } from "./LoadMoreBtn/LoadMoreBtn";
 import { Loader } from "./Loader/Loader";
 import { Modal } from "./Modal/Modal";
-import { 
-  FetchStartGallery, 
-  FetchSearch } from "API";
+import { FetchSearch } from "API";
 import Notiflix from 'notiflix';
 
-
 const perPage = 12;
-// const modalRoot = document.querySelector('#root');
+
+export const App = () => {
+  const [images, setImages] = useState([]);
+  const [largeImageURL, setLargeImageURL] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [value, setValue] = useState('');
+  const [isShowMore, setIsShowMore] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
 
-export class App extends Component {
-  state = {
-    images: [],
-    largeImageURL: '',
-    loading: false,
-    page: 1,
-    value: '',
-    canShowMore: false,
-    showModal: false,
-  }
-
-  componentDidMount() {
-    FetchStartGallery(this.state.page)
-    .then(data => {
-      this.setState({
-        images: [ ...data.hits],
-      })
-      if(data.total > perPage){
-        this.setState({ canShowMore: true })
-      }
-    })
-    .catch();
-
-  }
-
-  componentDidUpdate(_, prevState) {
-
-    const {images, value, page} = this.state;
-    
-    if(prevState.value !== value) {
-      this.setState({images: [], 
-        page: 1,
-        loading: true,
-      })
-    }
-
-    if(prevState.value !== value || prevState.page !== page){
-      
+  useEffect(() => {     
+      if (!value) return;
+      setLoading(true);
       FetchSearch(value, page)
       .then(data => {
-        this.setState(prevState => ({
-          images: [...prevState.images, ...data.hits],
-          loading: false,
-        }));
+        setImages(prev => [...prev, ...data.hits]);
+        setLoading(false);
 
         if(data.total > perPage){
-          this.setState({ canShowMore: true })
+          setIsShowMore( true )
         } else if(data.total - images.length <= perPage){
-          this.setState({ canShowMore: false })
+          setIsShowMore( false )
         }
-        
-      })
-      .catch(this.onApiError);
+      })  
+      .catch(onApiError);
+    
+  },[value, page]);
 
-    }
+  const handleSubmit = value => {
+    setImages([]);
+    setValue(value);
+    setPage(1)
   }
 
-  onApiError = () => {
+  const onApiError = () => {
     Notiflix.Notify.failure(
       'Sorry, there are no images matching your search query. Please try again.'
     );
-    this.setState({ loading: false, canShowMore: false });
+    setLoading(false)
+    setShowModal(false)
   };
 
-  handleFormSubmit = value => {
-    if(!this.state.showModal){
-    this.setState({ value })
-    }
-  }
+  const showMore = () => {
+    setPage(prev => prev + 1);
+    canShowMore();
+  };
 
-  showMore = () => {
-    this.setState(prevState => ({ page: prevState.page +1 }))
-  }
-
-  canShowMore = () => {
-    const {images} = this.state
+  const canShowMore = () => {
     if(images.total > perPage){
-      this.setState({ canShowMore: true })
+      setIsShowMore(true)
     } else if(images.total <= images.length + perPage){
-      this.setState({ canShowMore: false })
+      setIsShowMore(false)
       Notiflix.Notify.info(`We're sorry, but you've reached the end of search results.`)
     }
-  }
-
-  toggleModal = () => {
-    this.setState(({showModal}) => ({
-      showModal: !showModal,
-    }))
-  }
-
-  onImageClick = (largeImageURL) => {
-    this.setState({ largeImageURL });
-    this.toggleModal();
   };
 
-
-
-  render() {
-    const { images, value, loading, canShowMore, showModal, largeImageURL } = this.state;
-
-    return(
-      <>
-        <Searchbar onSubmit={this.handleFormSubmit}/>
-
-        <ImageGallery 
-          images={images}
-          value={value}
-          onClick={this.onImageClick}
-        />
-
-        {loading && <Loader />}
-
-        {canShowMore && <LoadMoreBtn onShowMore={this.showMore}/>}
-
-        {showModal && <Modal 
-          onClose={this.toggleModal}
-          largeImageURL={largeImageURL}
-        />}
-
-        <GlobalStyle/>
-      </>
-    )
+  const toggleModal = () => {
+    setShowModal(prev => !prev);
   }
+
+  const onImageClick = largeImageURL => {
+    setLargeImageURL(largeImageURL);
+    toggleModal();
+  };
+
+  return(
+    <>
+      <Searchbar onSubmit={handleSubmit}/>
+
+      <ImageGallery 
+        images={images}
+        value={value}
+        onClick={onImageClick}
+      />
+
+      {loading && <Loader />}
+
+      {isShowMore && <LoadMoreBtn onShowMore={showMore}/>}
+
+      {showModal && <Modal 
+        onClose={toggleModal}
+        largeImageURL={largeImageURL}
+      />}
+
+      <GlobalStyle/>
+    </>
+  )
 }

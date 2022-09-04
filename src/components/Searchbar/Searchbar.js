@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import { ImSearch } from 'react-icons/im';
 import Notiflix from 'notiflix';
 import {
@@ -9,52 +9,45 @@ import {
     SearchFormInput,
 } from "./Searchbar.styled"
 
-export class Searchbar extends Component {
-    state = {
-        value: '',
-    }
+export const Searchbar = ({onSubmit}) => {
+    const [value, setValue] = useState('');
 
-    handleChange = e => {
+    const handleChange = e => {
         const value = e.currentTarget.value;
         if(value){ 
-            this.setState({ value: value.toLowerCase() })
+            setValue(value.toLowerCase())
         }
     };
 
-    handleSubmit = e => {
+    const handleSubmit = e => {
         e.preventDefault();
         
-        if(this.state.value.trim() === '') {
-            Notiflix.Notify.warning('Enter your query');
-            return;
+        if(value.trim() === '') {
+            return Notiflix.Notify.warning('Enter your query');
         }
-        this.props.onSubmit(this.state.value);
-        this.setState({ value: '' })
-
+        onSubmit(value);
+        setValue('');
     };
 
-    render() {
-        return(
-            <SearchbarHead>
-                <SearchForm 
-                onChange={this.handleChange}
-                onSubmit={this.handleSubmit}
-                >
-                    <SearchFormBtn type="submit">
-                        <SearchFormBtnLabel>Search</SearchFormBtnLabel>
-                        <ImSearch/>
-                    </SearchFormBtn>
+    return(
+        <SearchbarHead>
+            <SearchForm 
+            onSubmit={handleSubmit}
+            >
+                <SearchFormBtn type="submit">
+                    <SearchFormBtnLabel>Search</SearchFormBtnLabel>
+                    <ImSearch/>
+                </SearchFormBtn>
 
-                    <SearchFormInput
-                        type="text"
-                        autocomplete="off"
-                        autoFocus
-                        placeholder="Search images and photos"
-                        value={this.state.value}
-                        onChange={this.handleChange}
-                    />
-                </SearchForm>
-            </SearchbarHead>
-        )
-    }
+                <SearchFormInput
+                    type="text"
+                    autocomplete="off"
+                    autoFocus
+                    placeholder="Search images and photos"
+                    value={value}
+                    onChange={handleChange}
+                />
+            </SearchForm>
+        </SearchbarHead>
+    )
 }
